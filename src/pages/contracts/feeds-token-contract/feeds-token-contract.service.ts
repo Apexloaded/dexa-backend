@@ -8,7 +8,6 @@ export class FeedsTokenContractService implements OnModuleInit {
   private contract: ethers.Contract;
   private provider: ethers.JsonRpcProvider;
   private filter: Record<string, ethers.ContractEvent<any[]>>;
-  private ethProvider: ethers.JsonRpcProvider;
 
   constructor(private configService: ConfigService) {}
 

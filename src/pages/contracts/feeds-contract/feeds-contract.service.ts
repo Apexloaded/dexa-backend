@@ -4,7 +4,6 @@ import {
   ethers,
   Contract,
   ContractEventPayload,
-  WebSocketProvider,
 } from 'ethers';
 import { FeedsABI } from './abi/feeds.abi';
 import { PostEventEmitter } from 'src/pages/posts/post.emitter';
@@ -14,8 +13,6 @@ export class FeedsContractService implements OnModuleInit {
   private contract: ethers.Contract;
   private provider: ethers.JsonRpcProvider;
   private filter: Record<string, ethers.ContractEvent<any[]>>;
-  private socket: ethers.WebSocketProvider;
-  private ev;
 
   constructor(
     private configService: ConfigService,
@@ -33,17 +30,13 @@ export class FeedsContractService implements OnModuleInit {
       this.provider,
     );
 
-    this.socket = new WebSocketProvider(
-      this.configService.get<string>('BSC_SOCKET_TESTNET'),
-    );
-    this.ev = this.contract.connect(this.socket);
     this.filter = this.contract.filters;
     this.listener();
   }
 
   private listener() {
     this.contract.on(
-      this.ev.filters.PostMinted(),
+      this.filter.PostMinted(),
       (event: ContractEventPayload) => {
         const { args } = event;
         console.log(args);
@@ -59,7 +52,7 @@ export class FeedsContractService implements OnModuleInit {
     );
 
     this.contract.on(
-      this.ev.filters.Tipped(),
+      this.filter.Tipped(),
       (event: ContractEventPayload) => {
         const hash = event.log.blockHash;
         const { args } = event;

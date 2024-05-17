@@ -3,9 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   ethers,
   Contract,
-  ContractEvent,
   ContractEventPayload,
-  WebSocketProvider,
 } from 'ethers';
 import { CreatorABI } from './abi/creator.abi';
 import { AuthEventEmitter } from 'src/pages/auth/auth.emitter';
@@ -14,8 +12,7 @@ import { AuthEventEmitter } from 'src/pages/auth/auth.emitter';
 export class CreatorContractService implements OnModuleInit {
   private contract: ethers.Contract;
   private provider: ethers.JsonRpcProvider;
-  private socket: ethers.WebSocketProvider;
-  private ev;
+  private filter: Record<string, ethers.ContractEvent<any[]>>;
 
   constructor(
     private configService: ConfigService,
@@ -33,16 +30,13 @@ export class CreatorContractService implements OnModuleInit {
       this.provider,
     );
 
-    this.socket = new WebSocketProvider(
-      this.configService.get<string>('BSC_SOCKET_TESTNET'),
-    );
-    this.ev = this.contract.connect(this.socket);
+    this.filter = this.contract.filters;
     this.listener();
   }
 
   private listener() {
     this.contract.on(
-      this.ev.filters.NewCreator(),
+      this.filter.NewCreator(),
       (event: ContractEventPayload) => {
         const { args } = event;
         this.AuthEvEmitter.creatorOnboarded({
