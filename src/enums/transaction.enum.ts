@@ -1,0 +1,5 @@
+export enum TRANSACTION_TYPE {
+  PURCHASE = 'PURCHASE',
+  SHARE = 'SHARE',
+  REFUND = 'REFUND',
+}
