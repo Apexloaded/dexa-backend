@@ -102,7 +102,6 @@ export class AuthController {
         user: user,
         expiresIn: expire,
       };
-      console.log(payload);
       return payload;
     } catch (error) {
       return getErrorMsg(error);

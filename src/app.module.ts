@@ -25,6 +25,7 @@ import { CreatorContractModule } from './pages/contracts/creator-contract/creato
 import { FeedsContractModule } from './pages/contracts/feeds-contract/feeds-contract.module';
 import { FeedsTokenContractModule } from './pages/contracts/feeds-token-contract/feeds-token-contract.module';
 import { UserModule } from './pages/user/user.module';
+import { MessagesModule } from './pages/messages/messages.module';
 
 @Module({
   imports: [
@@ -73,7 +74,8 @@ import { UserModule } from './pages/user/user.module';
     BucketModule,
     PostsModule,
     ObjectModule,
-    UserModule
+    UserModule,
+    MessagesModule
   ],
   controllers: [AppController],
   providers: [

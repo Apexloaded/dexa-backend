@@ -4,5 +4,6 @@ export enum EventTypes {
   ProfileUpdated = 'profile.updated',
   NewPost = 'post.added',
   PostMinted = 'post.minted',
-  PostTipped = 'post.tipped'
+  PostTipped = 'post.tipped',
+  MsgMediaUploaded = 'msg.media.uploaded'
 }
