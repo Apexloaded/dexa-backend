@@ -13,7 +13,7 @@ export class UserService {
     private readonly objService: ObjectService,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
+  create(createUserDto: FilterQuery<User>) {
     return this.userModel.create(createUserDto);
   }
 

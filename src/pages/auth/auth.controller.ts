@@ -8,6 +8,7 @@ import {
   Req,
   Body,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { isEthereumAddress } from 'class-validator';
 import { Response } from 'express';
@@ -19,6 +20,7 @@ import { VerifyNonceDto } from './dto/verify-nonce.dto';
 import { Cookies } from 'src/enums/cookie.enum';
 import { AuthEventEmitter } from './auth.emitter';
 import { UserService } from '../user/user.service';
+import { CreateAuthDto } from './dto/create-auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -27,6 +29,38 @@ export class AuthController {
     private readonly authEmitter: AuthEventEmitter,
     private readonly userService: UserService,
   ) {}
+
+  @Public()
+  @Post('register')
+  async register(@Body() createAuthDto: CreateAuthDto) {
+    try {
+      const { wallet } = createAuthDto;
+      const isEthAddr = isEthereumAddress(wallet);
+      if (!isEthAddr) {
+        return new UnauthorizedException('Unauthorized access');
+      }
+
+      const userAuth = await this.authService.findOne({
+        wallet: walletToLowercase(wallet),
+      });
+      if (userAuth) {
+        new ConflictException('User already exist');
+      }
+
+      const nonce = generateNonce();
+      const newUserAuth = {
+        wallet: walletToLowercase(wallet),
+        nonce: nonce,
+      };
+      await this.authService.create(newUserAuth);
+      await this.userService.create({ wallet: newUserAuth.wallet });
+      this.authEmitter.creatorAdded({ wallet: newUserAuth.wallet });
+
+      return { nonce: nonce };
+    } catch (error) {
+      return getErrorMsg(error);
+    }
+  }
 
   @Public()
   @Get('nonce/generate')
@@ -40,20 +74,11 @@ export class AuthController {
       const userAuth = await this.authService.findOne({
         wallet: walletToLowercase(wallet),
       });
-      if (userAuth) {
-        return { nonce: userAuth.nonce };
+      if (!userAuth) {
+        return new UnauthorizedException('Unauthorized access');
       }
 
-      const nonce = generateNonce();
-      const newUserAuth = {
-        wallet: walletToLowercase(wallet),
-        nonce: nonce,
-      };
-      await this.authService.create(newUserAuth);
-      await this.userService.create({ wallet: newUserAuth.wallet });
-      this.authEmitter.creatorAdded({ wallet: newUserAuth.wallet });
-
-      return { nonce: nonce };
+      return { nonce: userAuth.nonce };
     } catch (error) {
       return getErrorMsg(error);
     }

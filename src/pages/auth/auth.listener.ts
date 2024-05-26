@@ -5,10 +5,12 @@ import { CreatorAddedEvent } from './events/creator-added.event';
 import { ObjectService } from '../object/object.service';
 import { ConfigService } from '@nestjs/config';
 import { VisibilityType } from '@bnb-chain/greenfield-js-sdk';
-import { getErrorMsg } from 'src/helpers';
+import { getErrorMsg, walletToLowercase } from 'src/helpers';
 import { CreatorOnboardedEvent } from './events/creator-onboarded.event';
 import { Path } from 'src/enums/storage.path.enum';
 import { UserService } from '../user/user.service';
+import { AuthService } from './auth.service';
+import { generateNonce } from 'siwe';
 
 @Controller()
 export class AuthEventListener {
@@ -19,6 +21,7 @@ export class AuthEventListener {
     private readonly objService: ObjectService,
     private readonly configService: ConfigService,
     private readonly userService: UserService,
+    private readonly authService: AuthService,
   ) {
     this.bucket = this.configService.get<string>('BUCKET');
     this.sp = this.configService.get<string>('SP_HOST');
@@ -52,14 +55,26 @@ export class AuthEventListener {
   @OnEvent(EventTypes.CreatorOnboarded, { async: true })
   async creatorOnboarded(payload: CreatorOnboardedEvent) {
     try {
-      const { name, username } = payload;
-      const isAvailable = await this.userService.findOne({ username });
-      if (!isAvailable) {
-        await this.userService.update(
-          { wallet: payload.id },
-          { name, username },
-        );
+      const { name, username, id } = payload;
+      const userAuth = await this.authService.findOne({
+        wallet: walletToLowercase(id),
+      });
+      if (userAuth) {
+        return;
       }
+
+      const nonce = generateNonce();
+      const newUserAuth = {
+        wallet: walletToLowercase(id),
+        nonce: nonce,
+      };
+      await this.authService.create(newUserAuth);
+      await this.userService.create({
+        wallet: newUserAuth.wallet,
+        name,
+        username,
+      });
+      
     } catch (error: any) {
       console.log(error);
       getErrorMsg(error);
