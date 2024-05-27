@@ -84,18 +84,18 @@ export class PostsController {
           mimetype: file.mimetype,
         },
       };
-      await this.postsService.addPost({
-        creator: authUser.wallet,
-        postId: fileName,
-        content: content,
-        mimetype: file.mimetype,
-        visibility,
-      });
-      this.postEvEmitter.postCreated({
-        file,
-        fileName,
-        visibility,
-      });
+      // await this.postsService.addPost({
+      //   creator: authUser.wallet,
+      //   postId: fileName,
+      //   content: content,
+      //   mimetype: file.mimetype,
+      //   visibility,
+      // });
+      // this.postEvEmitter.postCreated({
+      //   file,
+      //   fileName,
+      //   visibility,
+      // });
       return response;
     } catch (error) {
       console.log('error', error);
