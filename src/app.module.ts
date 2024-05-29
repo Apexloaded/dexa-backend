@@ -26,6 +26,7 @@ import { FeedsContractModule } from './pages/contracts/feeds-contract/feeds-cont
 import { FeedsTokenContractModule } from './pages/contracts/feeds-token-contract/feeds-token-contract.module';
 import { UserModule } from './pages/user/user.module';
 import { MessagesModule } from './pages/messages/messages.module';
+import { StreamModule } from './pages/stream/stream.module';
 
 @Module({
   imports: [
@@ -75,7 +76,8 @@ import { MessagesModule } from './pages/messages/messages.module';
     PostsModule,
     ObjectModule,
     UserModule,
-    MessagesModule
+    MessagesModule,
+    StreamModule
   ],
   controllers: [AppController],
   providers: [
