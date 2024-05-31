@@ -22,6 +22,7 @@
   "dependencies": {
     "@bnb-chain/greenfield-js-sdk": "^2.0.0",
     "@bnb-chain/reed-solomon": "^1.1.3",
+    "@golevelup/nestjs-webhooks": "^0.2.18",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^10.0.0",

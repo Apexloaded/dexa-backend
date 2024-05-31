@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -18,8 +23,8 @@ import { PostsModule } from './pages/posts/posts.module';
 import { ObjectModule } from './pages/object/object.module';
 import { HttpModule } from '@nestjs/axios';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
-import type { RedisClientOptions } from 'redis';
-import { redisStore } from 'cache-manager-redis-store';
+// import type { RedisClientOptions } from 'redis';
+// import { redisStore } from 'cache-manager-redis-store';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { CreatorContractModule } from './pages/contracts/creator-contract/creator-contract.module';
 import { FeedsContractModule } from './pages/contracts/feeds-contract/feeds-contract.module';
@@ -27,6 +32,7 @@ import { FeedsTokenContractModule } from './pages/contracts/feeds-token-contract
 import { UserModule } from './pages/user/user.module';
 import { MessagesModule } from './pages/messages/messages.module';
 import { StreamModule } from './pages/stream/stream.module';
+import { applyRawBodyOnlyTo } from '@golevelup/nestjs-webhooks';
 
 @Module({
   imports: [
@@ -77,7 +83,7 @@ import { StreamModule } from './pages/stream/stream.module';
     ObjectModule,
     UserModule,
     MessagesModule,
-    StreamModule
+    StreamModule,
   ],
   controllers: [AppController],
   providers: [
@@ -97,4 +103,11 @@ import { StreamModule } from './pages/stream/stream.module';
     // },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    applyRawBodyOnlyTo(consumer, {
+      method: RequestMethod.ALL,
+      path: 'stream/webhook/livekit',
+    });
+  }
+}

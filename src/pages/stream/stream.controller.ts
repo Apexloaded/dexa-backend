@@ -3,13 +3,11 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   Req,
   NotImplementedException,
   NotFoundException,
-  RawBodyRequest,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { StreamService } from './stream.service';
 import { CreateStreamDto, CreateViewerTokenDto } from './dto/create-stream.dto';
@@ -120,6 +118,7 @@ export class StreamController {
   ) {
     try {
       const authUser = req['user'];
+      console.log(authUser);
       const currentUser = walletToLowercase(authUser.wallet);
       const { hostIdentity, username } = body;
       const roomName = walletToLowercase(hostIdentity);
@@ -145,6 +144,7 @@ export class StreamController {
         canPublishData: true,
       });
       const accessToken = await Promise.resolve(token.toJwt());
+      console.log(accessToken);
       return { token: accessToken };
     } catch (error) {
       return getErrorMsg(error);
@@ -176,9 +176,25 @@ export class StreamController {
 
   @Public()
   @Post('webhook/livekit')
-  async webHookLiveKit(@Req() req: RawBodyRequest<Request>) {
-    const body = req;
-    console.log(body.rawBody);
+  async webHookLiveKit(@Req() req: Request) {
+    const authorization = req.headers.authorization;
+    if (!authorization) {
+      throw new UnauthorizedException();
+    }
+    const raw = req.body;
+    const event = await this.webHook.receive(raw, authorization);
+    if (event.event === 'ingress_ended') {
+      await this.streamService.update(
+        { ingressId: event.ingressInfo.ingressId },
+        { isLive: false },
+      );
+    }
+    if (event.event === 'ingress_started') {
+      await this.streamService.update(
+        { ingressId: event.ingressInfo.ingressId },
+        { isLive: true },
+      );
+    }
   }
 
   private async resetIngresses(hostId: string) {

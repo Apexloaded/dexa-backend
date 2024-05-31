@@ -6,9 +6,13 @@ import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    rawBody: true,
+    //rawBody: true,
+    bodyParser: false,
   });
-  app.useBodyParser('raw');
+  // app.useBodyParser('raw');
+  // app.useBodyParser('text');
+  // app.useBodyParser('json', { limit: '50m' });
+  // app.useBodyParser('urlencoded', { limit: '50mb', extented: true });
   app.enableCors({
     origin: '*',
   });
