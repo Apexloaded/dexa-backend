@@ -20,6 +20,7 @@ import { type RoomServiceClient } from 'livekit-server-sdk/dist/RoomServiceClien
 import { type WebhookReceiver } from 'livekit-server-sdk/dist/WebhookReceiver';
 import { Public } from 'src/decorators/public.decorator';
 type LiveKitModule = typeof import('livekit-server-sdk');
+globalThis.crypto ??= require('node:crypto').webcrypto;
 
 @Controller('stream')
 export class StreamController {
