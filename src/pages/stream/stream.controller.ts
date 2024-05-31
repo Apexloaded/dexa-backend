@@ -17,7 +17,7 @@ import { getErrorMsg, walletToLowercase } from 'src/helpers';
 import { dynamicImport } from 'tsimportlib';
 import { type IngressClient } from 'livekit-server-sdk/dist/IngressClient';
 import { type RoomServiceClient } from 'livekit-server-sdk/dist/RoomServiceClient';
-import { type WebhookReceiver } from 'livekit-server-sdk';
+import { type WebhookReceiver } from 'livekit-server-sdk/dist/WebhookReceiver';
 import { Public } from 'src/decorators/public.decorator';
 type LiveKitModule = typeof import('livekit-server-sdk');
 
@@ -118,7 +118,6 @@ export class StreamController {
   ) {
     try {
       const authUser = req['user'];
-      console.log(authUser);
       const currentUser = walletToLowercase(authUser.wallet);
       const { hostIdentity, username } = body;
       const roomName = walletToLowercase(hostIdentity);
@@ -144,7 +143,6 @@ export class StreamController {
         canPublishData: true,
       });
       const accessToken = await Promise.resolve(token.toJwt());
-      console.log(accessToken);
       return { token: accessToken };
     } catch (error) {
       return getErrorMsg(error);
