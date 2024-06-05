@@ -182,7 +182,6 @@ export class StreamController {
     }
     const raw = req.body;
     const event = await this.webHook.receive(raw, authorization);
-    console.log(event);
     if (event.event === 'ingress_ended') {
       await this.streamService.update(
         { ingressId: event.ingressInfo.ingressId },

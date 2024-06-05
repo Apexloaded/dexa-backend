@@ -33,6 +33,7 @@ import { UserModule } from './pages/user/user.module';
 import { MessagesModule } from './pages/messages/messages.module';
 import { StreamModule } from './pages/stream/stream.module';
 import { applyRawBodyOnlyTo } from '@golevelup/nestjs-webhooks';
+import { BookmarksModule } from './pages/bookmarks/bookmarks.module';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { applyRawBodyOnlyTo } from '@golevelup/nestjs-webhooks';
     UserModule,
     MessagesModule,
     StreamModule,
+    BookmarksModule,
   ],
   controllers: [AppController],
   providers: [
