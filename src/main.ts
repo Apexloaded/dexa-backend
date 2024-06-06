@@ -9,7 +9,7 @@ async function bootstrap() {
     bodyParser: false,
   });
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: 'https://api.dexa.ink',
   });
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
