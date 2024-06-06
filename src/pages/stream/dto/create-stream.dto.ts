@@ -1,4 +1,4 @@
-import { IsEnum, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsString } from 'class-validator';
 import { IngressInput } from 'src/enums/ingressInput.enum';
 
 export class CreateStreamDto {
@@ -15,4 +15,9 @@ export class CreateViewerTokenDto {
 
   @IsString()
   username: string;
+}
+
+export class BatchStreamStatusDto {
+  @IsArray()
+  addresses: string[];
 }

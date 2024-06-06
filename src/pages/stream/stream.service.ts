@@ -3,7 +3,7 @@ import { CreateStreamDto } from './dto/create-stream.dto';
 import { UpdateStreamDto } from './dto/update-stream.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Stream } from './schemas/stream.schema';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, ProjectionType } from 'mongoose';
 
 @Injectable()
 export class StreamService {
@@ -13,8 +13,8 @@ export class StreamService {
     return this.streamModel.create(createStreamDto);
   }
 
-  findAll() {
-    return `This action returns all stream`;
+  findAll(filter: FilterQuery<Stream>, projection?: ProjectionType<Stream>) {
+    return this.streamModel.find(filter, projection);
   }
 
   findOne(filter: FilterQuery<Stream>) {

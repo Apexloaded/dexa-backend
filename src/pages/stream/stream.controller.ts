@@ -10,7 +10,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { StreamService } from './stream.service';
-import { CreateStreamDto, CreateViewerTokenDto } from './dto/create-stream.dto';
+import {
+  BatchStreamStatusDto,
+  CreateStreamDto,
+  CreateViewerTokenDto,
+} from './dto/create-stream.dto';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { getErrorMsg, walletToLowercase } from 'src/helpers';
@@ -168,6 +172,23 @@ export class StreamController {
         return { status: false };
       }
       return { status: host.isLive };
+    } catch (error) {
+      return getErrorMsg(error);
+    }
+  }
+
+  @Post('status/batch')
+  async batchUsersStreamStatus(@Body() body: BatchStreamStatusDto) {
+    try {
+      const { addresses } = body;
+      const liveUsers = await this.streamService.findAll(
+        {
+          creator: { $in: addresses },
+          isLive: true,
+        },
+        { creator: 1, isLive: 1, _id: 0 },
+      );
+      return liveUsers;
     } catch (error) {
       return getErrorMsg(error);
     }
